@@ -13,9 +13,31 @@
     <title>Todo App</title>
   </head>
   <body>
-    <header></header>
-    <main></main>
-    <footer></footer>
+    <header><h1>Todo App</h1></header>
+    <main>
+      <form>
+        <label for="allButton">All</label>
+        <input type="radio" class="radio" id="allButton" checked /><br />
+        <label for="openButton">Open</label>
+        <input type="radio" class="radio" id="openButton" /><br />
+        <label for="doneButton">Done</label>
+        <input type="radio" class="radio" id="doneButton" /><br />
+        <button class="removeTodos" id="removeTodos">Remove done Todos</button
+        ><br />
+        <div class="inputContainer">
+          <input
+            type="text"
+            class="inputTodo"
+            id="inputTodo"
+            placeholder="What's up?"
+          />
+          <button type="button" class="addTodoButton" id="addTodoButton">
+            Add
+          </button>
+        </div>
+        <ul id="todoList"></ul>
+      </form>
+    </main>
     <script src="script.js"></script>
   </body>
 </html>
