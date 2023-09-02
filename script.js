@@ -1,21 +1,26 @@
 const allButton = document.querySelector("#allButton");
 const openButton = document.querySelector("#openButton");
 const doneButton = document.querySelector("#doneButton");
-const allRadioButtons = document.querySelectorAll(".radio");
 const removeButton = document.querySelector("#removeTodos");
 const inputTodo = document.querySelector("#inputTodo");
 const customPopup = document.querySelector("#customPopup");
 const smallTriangle = document.querySelector("#smallTriangle");
 const addTodoButton = document.querySelector("#addTodoButton");
 const todoList = document.querySelector("#todoList");
-const toDoCheckboxes = todoList.querySelector("li");
 
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function renderState() {
-  const statusOfRadioButtons = JSON.parse(
+  let statusOfRadioButtons = JSON.parse(
     localStorage.getItem("StatusOfRadioButtons")
   );
+  if (statusOfRadioButtons === null) {
+    statusOfRadioButtons = {
+      allButton: true,
+      openButton: false,
+      doneButton: false,
+    };
+  }
   allButton.checked = statusOfRadioButtons.allButton;
   openButton.checked = statusOfRadioButtons.openButton;
   doneButton.checked = statusOfRadioButtons.doneButton;
