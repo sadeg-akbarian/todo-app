@@ -4,46 +4,11 @@ const doneButton = document.querySelector("#doneButton");
 const allRadioButtons = document.querySelectorAll(".radio");
 const removeButton = document.querySelector("#removeTodos");
 const inputTodo = document.querySelector("#inputTodo");
+const customPopup = document.querySelector("#customPopup");
+const smallTriangle = document.querySelector("#smallTriangle");
 const addTodoButton = document.querySelector("#addTodoButton");
 const todoList = document.querySelector("#todoList");
 const toDoCheckboxes = todoList.querySelector("li");
-
-function initialState() {
-  localStorage.clear();
-  const updateStateRadioButtons = {
-    allButton: true,
-    openButton: false,
-    doneButton: false,
-  };
-  const addedTodos = {};
-
-  localStorage.setItem(
-    "StatusOfRadioButtons",
-    JSON.stringify(updateStateRadioButtons)
-  );
-  localStorage.setItem("addedTodos", JSON.stringify(addedTodos));
-}
-
-initialState();
-
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-function changeRadioButtonStatus(xxx) {
-  const statusOfRadioButtons = JSON.parse(
-    localStorage.getItem("StatusOfRadioButtons")
-  );
-  for (const radioButton in statusOfRadioButtons) {
-    if (radioButton === xxx) {
-      statusOfRadioButtons[radioButton] = true;
-    } else {
-      statusOfRadioButtons[radioButton] = false;
-    }
-  }
-  localStorage.setItem(
-    "StatusOfRadioButtons",
-    JSON.stringify(statusOfRadioButtons)
-  );
-}
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -55,10 +20,11 @@ function renderState() {
   openButton.checked = statusOfRadioButtons.openButton;
   doneButton.checked = statusOfRadioButtons.doneButton;
   todoList.innerHTML = "";
-  const addedTodos = JSON.parse(localStorage.getItem("addedTodos"));
-  console.log(addedTodos);
+  let addedTodos = JSON.parse(localStorage.getItem("addedTodos"));
+  if (addedTodos === null) {
+    addedTodos = {};
+  }
   for (const toDo in addedTodos) {
-    console.log(addedTodos[toDo]);
     const newElement = document.createElement("li");
     const newTextNode = document.createTextNode(
       addedTodos[toDo].description + " "
@@ -71,6 +37,9 @@ function renderState() {
     newInput.type = "checkbox";
     newElement.appendChild(newInput);
     newInput.checked = addedTodos[toDo].done;
+    if (newInput.checked === true) {
+      newElement.classList.add("toDoDone");
+    }
     console.log(newInput.checked);
     todoList.appendChild(newElement);
   }
@@ -93,36 +62,88 @@ function renderState() {
   }
 }
 
-//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-allButton.addEventListener("click", function (event) {
-  changeRadioButtonStatus(event.target.id);
-  renderState();
-});
-
-openButton.addEventListener("click", function (event) {
-  changeRadioButtonStatus(event.target.id);
-  renderState();
-});
-
-doneButton.addEventListener("click", function (event) {
-  changeRadioButtonStatus(event.target.id);
-  renderState();
-});
+renderState();
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function changeRadioButtonStatus(xxx) {
+  let statusOfRadioButtons = JSON.parse(
+    localStorage.getItem("StatusOfRadioButtons")
+  );
+  if (statusOfRadioButtons === null) {
+    statusOfRadioButtons = {
+      allButton: true,
+      openButton: false,
+      doneButton: false,
+    };
+  }
+  for (const radioButton in statusOfRadioButtons) {
+    if (radioButton === xxx) {
+      statusOfRadioButtons[radioButton] = true;
+    } else {
+      statusOfRadioButtons[radioButton] = false;
+    }
+  }
+  localStorage.setItem(
+    "StatusOfRadioButtons",
+    JSON.stringify(statusOfRadioButtons)
+  );
+}
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+allButton.addEventListener("change", function (event) {
+  changeRadioButtonStatus(event.target.id);
+  renderState();
+});
+
+openButton.addEventListener("change", function (event) {
+  changeRadioButtonStatus(event.target.id);
+  renderState();
+});
+
+doneButton.addEventListener("change", function (event) {
+  changeRadioButtonStatus(event.target.id);
+  renderState();
+});
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+inputTodo.addEventListener("click", function () {
+  customPopup.style.display = "none";
+  smallTriangle.style.display = "none";
+});
+
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 addTodoButton.addEventListener("click", function () {
   console.log(inputTodo.value);
   const trimedInput = inputTodo.value.trim();
   console.log(trimedInput.length);
   console.log(trimedInput);
   if (trimedInput.length >= 5) {
-    const addedTodos = JSON.parse(localStorage.getItem("addedTodos"));
-    const newID = Date.now().toString(36);
-    addedTodos[newID] = { description: trimedInput, id: newID, done: false };
+    let addedTodos = JSON.parse(localStorage.getItem("addedTodos"));
+    if (addedTodos === null) {
+      addedTodos = {};
+    }
+    const allDescriptions = [];
     console.log(addedTodos);
-    localStorage.setItem("addedTodos", JSON.stringify(addedTodos));
+    for (const toDo in addedTodos) {
+      console.log(addedTodos[toDo].description);
+      allDescriptions.push(addedTodos[toDo].description.toLowerCase());
+    }
+    const isToDoIncluded = allDescriptions.includes(trimedInput.toLowerCase());
+    console.log(allDescriptions);
+    console.log(isToDoIncluded);
+    if (isToDoIncluded) {
+      customPopup.style.display = "inline";
+      smallTriangle.style.display = "inline";
+      return;
+    } else {
+      const newID = Date.now().toString(36);
+      addedTodos[newID] = { description: trimedInput, id: newID, done: false };
+      console.log(addedTodos);
+      localStorage.setItem("addedTodos", JSON.stringify(addedTodos));
+    }
   }
   inputTodo.value = "";
   renderState();
@@ -130,7 +151,7 @@ addTodoButton.addEventListener("click", function () {
 
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-todoList.addEventListener("click", function (event) {
+todoList.addEventListener("change", function (event) {
   const clickedCheckbox = event.target;
   if (
     clickedCheckbox.tagName === "INPUT" &&
@@ -148,5 +169,25 @@ todoList.addEventListener("click", function (event) {
     console.log(addedTodos[currentID]);
     localStorage.setItem("addedTodos", JSON.stringify(addedTodos));
   }
+  renderState();
+});
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+removeButton.addEventListener("click", function () {
+  console.log("aaaaaaaaaaaa");
+  let addedTodos = JSON.parse(localStorage.getItem("addedTodos"));
+  if (addedTodos === null) {
+    addedTodos = {};
+  }
+  console.log(addedTodos);
+  for (toDo in addedTodos) {
+    if (addedTodos[toDo].done === true) {
+      console.log(toDo);
+      delete addedTodos[toDo];
+    }
+  }
+  console.log(addedTodos);
+  localStorage.setItem("addedTodos", JSON.stringify(addedTodos));
   renderState();
 });

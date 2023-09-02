@@ -22,7 +22,8 @@
         <input type="radio" class="radio" id="openButton" /><br />
         <label for="doneButton">Done</label>
         <input type="radio" class="radio" id="doneButton" /><br />
-        <button class="removeTodos" id="removeTodos">Remove done Todos</button
+        <button type="button" class="removeTodos" id="removeTodos">
+          Remove done Todos</button
         ><br />
         <div class="inputContainer">
           <input
@@ -30,7 +31,12 @@
             class="inputTodo"
             id="inputTodo"
             placeholder="What's up?"
+            autocomplete="on"
           />
+          <div id="customPopup" class="popup">
+            Dieser Eintrag existiert bereits!
+          </div>
+          <div class="smallTriangle" id="smallTriangle"></div>
           <button type="button" class="addTodoButton" id="addTodoButton">
             Add
           </button>
